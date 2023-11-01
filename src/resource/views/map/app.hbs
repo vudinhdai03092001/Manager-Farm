@@ -1,0 +1,151 @@
+{{> header}}
+        {{>navbar}}
+<main id="main" class="main">
+    
+    <div class="pagetitle">
+        <h1>Bản đồ</h1>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+            {{!-- <div class="col-lg-4"> --}}
+                <!-- Recent Activity -->
+                {{!-- <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Cơ cấu cây trồng</h5>
+                        <select class="form-select" aria-label="Default select example">
+                            <option> Cánh Đồng</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
+                </div><!-- End Recent Activity --> --}}
+                <!-- Budget Report -->
+            {{!-- </div><!-- End Right side columns --> --}}
+            <!-- Left side columns -->
+            <div class="col-lg-12">
+                <div class="row " > <button class="w-25" onclick="save()">save button</button>
+                    <!-- Reports -->
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">                            
+                                <!-- Line Chart -->
+                               <div id="map" style="width: 100%; height: 70vh;"></div>                                <!-- End Line Chart -->
+                            </div>
+                        </div>
+                    </div><!-- End Reports -->
+                </div>
+            </div><!-- End Left side columns -->
+           
+            <!-- Right side columns -->
+        </div>
+    </section>
+</main><!-- End #main -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+<script>
+    var polygon
+    function save(){
+    $.ajax({
+                url: '/map',
+                type: 'POST',
+                data: {
+                    {{!-- popupcontent:polygon.properties.popupContent, --}}
+                    coordinates:polygon.geometry.coordinates[0],
+                }
+            })
+  }
+  console.log(polygon)
+    document.addEventListener('DOMContentLoaded', function () {
+        var map = L.map('map').setView([20.971, 105.867], 15);
+
+        var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+        }).addTo(map);
+
+        var googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+            maxZoom: 20,
+            subdomains:['mt0','mt1','mt2','mt3']
+        }).addTo(map);
+
+        //Layer controller
+        var baseMaps = {
+            "OSM": osm,
+            "Google map": googleStreets,
+        }
+
+        {{!-- map.removeLayer(single_marker) --}}
+{{!-- L.control.layers(baseMaps, overlayMaps).addTo(map); --}}
+
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        var drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems,
+            },
+        });
+        map.addControl(drawControl);
+
+        {{!-- map.on(L.Draw.Event.CREATED, function (event) { --}}
+        map.on('draw:created', function (event) {
+            var type = event.layerType;
+            var layer = event.layer;
+            drawnItems.addLayer(layer);
+        
+            if (type === 'marker') {
+            // Xử lý khi vẽ điểm
+            } else if (type === 'polygon') {
+            // Xử lý khi vẽ vùng
+            polygon = layer.toGeoJSON();
+            console.log(polygon);
+            {{!-- console.log(polygon.properties.popupContent); --}}
+            
+            
+
+        }
+        console.log(polygon.geometry.coordinates[0]);
+  
+    drawnItems.addLayer(layer);
+            {{!-- updatePolygonJson(); --}}
+        });
+
+        if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(getPosition)
+        } else{
+            console.log("Your browser doesn't support geolocation feature!")
+        }
+
+        var marker,circle;
+
+        function getPosition(position){
+            var lat = position.coords.latitude
+            var long = position.coords.longitude
+            var accuracy = position.coords.accuracy
+
+            marker = L.marker([lat, long]).addTo(map)
+            circle = L.circle([lat, long], {radius:accuracy})
+            var feature_group = L.featureGroup([marker, circle]).addTo(map)
+            map.fitBounds(feature_group.getBounds())
+            //map.setView([lat, long], 20);
+            console.log(lat, long, accuracy)
+        }
+
+        //Add scale
+        var scale = L.control.scale({position:'bottomright'}).addTo(map);
+
+        //Caculate measure
+        {{!-- var measure = L.control.measure().addTo(map); --}}
+
+        {{!-- function updatePolygonJson() {
+            var geojson = drawnItems.toGeoJSON();
+            var geojson_string = JSON.stringify(geojson);
+            const fs = require('fs');
+            fs.writeFileSync('map.js', 'var geojson = ' + geojson_string + ';', 'utf-8');
+        } --}}
+
+
+    });
+</script>

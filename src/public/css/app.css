@@ -1,0 +1,72 @@
+a {
+  text-decoration: none !important; }
+
+table {
+  border-collapse: collapse;
+  width: 100%; }
+
+table,
+th,
+td {
+  border: 1px solid #ccc; }
+
+th,
+td {
+  padding: 5px;
+  text-align: center; }
+
+th {
+  background-color: #f2f2f2; }
+
+td:hover {
+  background-color: #e0e0e0;
+  align-items: center; }
+
+#nextMonth {
+  background-color: transparent;
+  border: none;
+  cursor: pointer; }
+
+#beforeMonth {
+  background-color: transparent;
+  border: none;
+  cursor: pointer; }
+
+.box-center {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  text-align: center; }
+
+.event-title {
+  float: left; }
+
+.main-form {
+  width: 900px; }
+
+.form {
+  margin: auto; }
+
+.title {
+  text-align: center;
+  padding-top: 20px; }
+
+.btn {
+  width: 100%;
+  font-weight: 400; }
+
+.form-group.invalid .form-control {
+  border-color: #f33a58; }
+
+.form-group.invalid .form-message {
+  color: #f33a58; }
+
+.form-message {
+  font-size: 13px; }
+
+#message-error {
+  color: #f33a58; }
+
+#message-success {
+  color: #52ff7d; }
