@@ -78,6 +78,7 @@
             })
                 .then(data => {
                     setCookie('token', data.token, 1)
+                    console.log(data)
                     var dataUser = data.getUser.username
                     localStorage.setItem('User', JSON.stringify(dataUser))
                     window.location.replace('/')

@@ -24,20 +24,20 @@
                                     <form action="/user/register" method="POST" class="form row" id="form-1">
 
                                         <div class="form-group  mt-3 ">
-                                            <label for="name" class="form-label">Tên của bạn:</label>
+                                            <label for="name" class="form-label">Tên Đăng Nhập :</label>
                                             <input type="text" class="form-control" id="name" placeholder="NguyenVanA"
                                                 name="username">
                                             <span class="form-message" id=""></span>
                                         </div>
                                         <div class="form-group  mt-3">
-                                            <label for="email" class="form-label">Email:</label>
+                                            <label for="email" class="form-label">Email :</label>
                                             <input type="text" class="form-control" id="email"
                                                 placeholder="example@gmail.com" name="email">
                                             <span class="form-message"></span>
                                         </div>
                                         <div class="form-group  mt-3">
 
-                                            <label for="password" class="form-label">Password:</label>
+                                            <label for="password" class="form-label">Password :</label>
                                             <input type="password" class="form-control" id="Password" placeholder=""
                                                 name="password">
                                             <span class="form-message" id=""></span>
@@ -50,20 +50,17 @@
                                                 name="confirmation">
                                             <span class="form-message" id=""></span>
                                         </div>
-                                        <div class="box-center mt-4">
 
-                                            <button class="btn btn-primary w-50 " type="submit"
-                                                onclick="register()">Đăng
-                                                ký</button>
-
-                                        </div>
                                         <div class="mt-4" style="text-align: center;">
                                             <p class="small mb-0">Bạn đã có tài khoản? <a href="/user/login">Đăng
                                                     nhập</a></p>
                                             <p id="message-error"></p>
                                         </div>
                                     </form>
-
+                                    <div class="box-center mt-4">
+                                        <button class="btn btn-primary w-50 " type="submit" onclick="register()">Đăng
+                                            ký</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -78,21 +75,24 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script>
         var fromsubmit = document.forms['form-1']
+
         var error = document.getElementById('message-error')
         function register() {
             $.ajax({
                 url: '/user/register',
                 type: 'POST',
+
                 data: {
                     email: $('#email').val(),
                 }
             })
                 .then(data => {
-                    error.innerHTML = data.message;
+                    if (data) {
+                        console.log(data.message)
+                    }
                 })
                 .catch(err => {
-                    console.log(err)
-
+                    
                 })
         }
 
@@ -111,7 +111,6 @@
             ],
             onSubmit: function (data) {
                 fromsubmit.submit()
-
             }
         });
 

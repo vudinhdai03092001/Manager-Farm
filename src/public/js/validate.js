@@ -78,7 +78,6 @@ function Validator(options) {
                   getElement(inputElment, options.selectform).classList.remove('invalid');
               }
           }
-
       });
   }
 }
@@ -90,7 +89,6 @@ Validator.isRequired = function (selector) {
           return value.trim() ? undefined : "Vui lòng nhập trường này"
       }
   }
-
 }
 Validator.isEmail = function (selector) {
   return {
@@ -110,6 +108,15 @@ Validator.isEmail = function (selector) {
       }
   }
 }
+
+Validator.isNewPassWord = function (selector) {
+    return {
+        selector: selector,
+        test: function (value) {
+            return value.trim() ? undefined : "Vui lòng nhập trường này"
+        }
+    }
+  }
 Validator.isPassWord = function (selector, key) {
   return {
       selector: selector,
@@ -117,7 +124,6 @@ Validator.isPassWord = function (selector, key) {
           return value.length >= key ? undefined : `Vui lòng nhập ít nhất ${key} ký tự `
       }
   }
-
 }
 Validator.isConfirmation = function (selector, getValue) {
   return {

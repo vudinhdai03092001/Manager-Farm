@@ -9,9 +9,12 @@ const db = require('./config/db')
 //change mathod
 const methodOverride = require('method-override')
 
+var cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 
+//cookies
+app.use(cookieParser())
 
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.urlencoded({
