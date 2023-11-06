@@ -60,8 +60,8 @@ function Validator(options) {
               
               
           }
-          var jsonDanhSachDangKy = JSON.stringify(formList);
-              localStorage.setItem("DanhSachDKY", jsonDanhSachDangKy)
+        //   var jsonDanhSachDangKy = JSON.stringify(formList);
+        //       localStorage.setItem("DanhSachDKY", jsonDanhSachDangKy)
       }
 
       //lặp qua từng rule

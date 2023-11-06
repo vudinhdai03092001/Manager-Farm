@@ -47,7 +47,6 @@ class LichController {
     }
     //[PUT] UPDATE calendar/:id
     update(req, res, next) {
-        console.log(req.params.id)
         Works.updateOne({ _id: req.params.id }, req.body).lean()
             .then(() => res.redirect('/lich'))
             .catch(next)

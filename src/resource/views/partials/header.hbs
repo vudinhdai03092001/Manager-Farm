@@ -26,27 +26,23 @@
                     <i class="bi bi-bell"></i>
                 </a><!-- End Notification Icon -->
             </li><!-- End Notification Nav -->
-
-
             <li class="nav-item dropdown pe-3">
-
                 <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                     <img src="/img/User_icon_2.svg.png" alt="Profile" class="rounded-circle">
                     <span class="d-none d-md-block dropdown-toggle ps-2" id="user"></span>
                 </a><!-- End Profile Iamge Icon -->
 
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-                    <li class="dropdown-header">
-                    
+                    <li class="dropdown-header">                    
                         <span>Quản lý tài khoản<nav></nav></span>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
                     <li>
-                        <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                        <a class="dropdown-item d-flex align-items-center" href="/user/changepass">
                             <i class="bi bi-person"></i>
-                            <span>My Profile</span>
+                            <span>Thay đổi mật khẩu</span>
                         </a>
                     </li>
                     <li>
@@ -72,13 +68,10 @@
                             <span>Đăng xuất</span>
                         </a>
                     </li>
-
                 </ul><!-- End Profile Dropdown Items -->
             </li><!-- End Profile Nav -->
-
         </ul>
     </nav><!-- End Icons Navigation -->
-
 </header><!-- End Header -->
 <script>
     var getUser = JSON.parse(localStorage.getItem('User'))

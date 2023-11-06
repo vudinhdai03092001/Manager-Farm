@@ -1,8 +1,8 @@
 const Account = require('../models/Account')
 var jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const path = require('path');
-const cookieParser = require('cookie-parser');
+const { render } = require('node-sass');
+const { datacatalog } = require('googleapis/build/src/apis/datacatalog');
 class UserController {
     index(req, res) {
         res.render('user/login')
@@ -11,12 +11,14 @@ class UserController {
         try {
             var username = req.body.username
             var password = req.body.password
+            console.log(password)
             //tìm kiếm user theo tên
             Account.findOne({
                 username,
 
             })
                 .then(data => {
+                    console.log(data)
                     //so sánh mật khẩu khi người dùng nhập vào với mật khẩu trong data
                     bcrypt.compare(password, data.password, (err, result) => {
                         if (err) {
@@ -52,41 +54,34 @@ class UserController {
     }
     //[post] form register
     register(req, res, next) {
-        try {
-            var email = req.body.email
-            console.log(email)
-            Account.findOne({
-                email
+
+        var email = req.body.email
+        var username = req.body.username
+        var password = req.body.password
+
+        Account.findOne({ $or: [{ email }, { username }] })
+            .then(data => {
+                if (data) {
+                    res.json({ message: 'Tài khoản đã tồn tại' })
+                }
+                else {
+                    bcrypt.hash(password, 10, (err, hash) => {
+                        if (err) {
+                            console.error('Lỗi khi băm mật khẩu:', err);
+                        } else {
+                            // Lưu mật khẩu băm vào cơ sở dữ liệu 
+                            const formdata = req.body
+                            formdata.role = 0;
+                            formdata.password = hash;
+                            const account = new Account(formdata)
+                            account.save()
+                                .then(() => res.json({ message: 'Đăng kí thành công' }))
+                                .catch(next)
+                        }
+                    })
+                }
             })
-                .then(data => {
-                    if (data) {
-                         res.json({
-                            message: "tài khoản đã tồn tại"
-                        })
-                    }
-                    else {
-                        bcrypt.hash(req.body.password, 10, (err, hash) => {
-                            if (err) {
-                                console.error('Lỗi khi băm mật khẩu:', err);
-                            } else {
-                                // Lưu mật khẩu băm vào cơ sở dữ liệu 
-                                const formdata = req.body
-                                formdata.role = 0;
-                                formdata.password = hash;
-                                const account = new Account(formdata)
-                                account.save()
-                                    .then(() => res.redirect('/user/login'))
-                                    .catch(next)
-                            }
-                        })
-                    }
-                })
-                .catch(
-                    error => next(error)
-                )
-        } catch (error) {
-            return res.redirect('/user/register')
-        }
+            .catch(next)
     }
     // [GET] render formpass
     renderchangepass(req, res) {
@@ -100,6 +95,7 @@ class UserController {
             Account.findOne({ _id: id }).lean()
                 .then(data => {
                     var curenpasss = req.body.currentpassword
+                    //so sánh mật khẩu nhập vào với mật khẩu lấy từ database
                     bcrypt.compare(curenpasss, data.password, (err, result) => {
                         if (err) {
                             console.error('Lỗi khi tạo mật khẩu băm:', err);
@@ -112,13 +108,14 @@ class UserController {
                                     Account.updateOne({ _id: id }, {
                                         password: hash
                                     })
-                                        .then(() => { return console.log('đã thay đổi') })
+                                        .then(() => { return res.json({ message: "Thay đổi mật khẩu thành công " }) })
                                         .catch(next)
                                 }
                             });
                         }
                         else {
-                            console.log('mật khẩu hiện tại không đúng')
+                            return res.json({ message: "Mật khẩu hiện tại không đúng" })
+
                         }
                     })
                 })
@@ -126,5 +123,77 @@ class UserController {
             console.log(error)
         }
     }
+
+    // [get] forget PASSWORD
+    showforgot(req, res) {
+        res.render('user/forgotPassword')
+    }
+    // [post ] email when forget password
+    forgot(req, res, next) {
+        let email = req.body.email
+        Account.findOne({ email: email })
+            .then(data => {
+                if (data) {
+                    const { sign } = require('./Jwt');
+                    const host = req.header('host');
+                    const resetLink = `${req.protocol}://${host}/user/reset?token=${sign(email)}&email=${email}`
+                    const { sendForgotPasswordMail } = require('./Email')
+                    sendForgotPasswordMail(data, host, resetLink)
+                        .then((result) => {
+                            console.log('email has been sent')
+                            return res.render('user/forgotPassword', { done: true })
+                        })
+                        .catch(error => {
+                            console.log(error.status)
+                            return res.render('user/forgotPassword', { message: "check email " })
+                        })
+                }
+                else {
+                    return res.render('user/forgotPassword', { message: " Email không tồn tại !" })
+                }
+            })
+            .catch(next)
+    }
+    // [get]  show reset password
+    showReset(req, res) {
+        let email = req.query.email;
+        let token = req.query.token;
+        let { verify } = require('./Jwt');
+
+        if (!token || !verify(token)) {
+            return res.render('user/reset', { expired: true })
+        }
+        else {
+            return res.render('user/reset', { email, token })
+        }
+    }
+    resetPass(req, res, next) {
+        const password = req.body.password
+        const email = req.body.email
+        Account.findOne({ email: email }).lean()
+            .then(data => {
+                if (data) {
+                    bcrypt.hash(password, 10, (err, hash) => {
+                        if (err) {
+                            console.error('Lỗi khi băm mật khẩu:', err);
+                        } else {
+                            // Lưu mật khẩu băm vào cơ sở dữ liệu 
+                            Account.updateOne({ email: email }, { password: hash })
+                                .then((data) => {
+                                    if (data) {
+                                        return res.json({ message: "Thay đổi mật khẩu thành công" })
+                                    }
+                                })
+                                .catch(next)
+                        }
+                    });
+                }
+                else {
+                    return res.json({ message: "Link của bạn hết hiệu lực" })
+                }
+
+            })
+    }
 }
+
 module.exports = new UserController

@@ -1,8 +1,6 @@
 <body>
-
     <main>
         <div class="container">
-
             <section
                 class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
                 <div class="container">
@@ -24,7 +22,6 @@
                                         <div class="col-md-12">
                                             <label for="username" class="form-label">Tên đăng nhập:</label>
                                             <input type="text" class="form-control" id="name" name="username" required>
-
                                             <div class="invalid-feedback">
                                                 Bạn cần nhập tên đăng nhập
                                             </div>
@@ -38,13 +35,12 @@
                                                 Bạn cần nhập mật khẩu
                                             </div>
                                         </div>
-
-
                                         <div class="col-12 box-center mt-3">
-                                            <p class="small mb-0">Bạn đã có tài khoản? <a href="/user/register"> Đăng
-                                                    ký</a></p>
+                                            <p class="small mb-0">Bạn đã có tài khoản? <a href="/user/register"> Đăng ký</a></p>
+                    
+                                          
                                         </div>
-
+                                        <div class="col-12 box-center mt-1">  <p class="small mb-0"> <a href="/user/forgot"> Quên mật khẩu ?</a></p></div>
                                     </form>
                                     <div class="col-12 box-center mt-4">
                                         <button class="btn btn-primary w-50" type="submit" onclick="login()">Đăng
@@ -63,18 +59,20 @@
         </div>
     </main><!-- End #main -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
     <script>
         var success = document.getElementById('message-success')
         var error = document.getElementById('message-error')
-      
+
         function login() {
             $.ajax({
                 url: '/user',
                 type: 'POST',
                 data: {
                     username: $('#name').val(),
-                    password: $('#password').val()
-                }
+                    //mã hóa mật khẩu trước khi gửi qua ajax
+                    password: CryptoJS.SHA256($('#password').val()).toString()
+                },
             })
                 .then(data => {
                     setCookie('token', data.token, 1)

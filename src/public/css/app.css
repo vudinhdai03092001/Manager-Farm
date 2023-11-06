@@ -65,8 +65,8 @@ td:hover {
 .form-message {
   font-size: 13px; }
 
-#message-error {
+.message-error {
   color: #f33a58; }
 
-#message-success {
+.message-success {
   color: #52ff7d; }

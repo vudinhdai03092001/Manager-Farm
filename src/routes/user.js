@@ -18,6 +18,21 @@ router.post('/', UserController.login, (req, res) => {
 router.get('/changepass', UserController.renderchangepass)
 // change password
 router.post('/changepass', UserController.changepass)
+
+// render form forgetpass
+router.get('/forgot', UserController.showforgot)
+
+
+// check email 
+router.post('/forgot', UserController.forgot)
+
+// form resetpass
+router.get('/reset',UserController.showReset)
+
+// post reset pass
+ 
+router.post('/reset',UserController.resetPass)
+
 //log out
 router.get('/logout', (req, res) => {
     res.clearCookie('token')
